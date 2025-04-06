@@ -18,12 +18,6 @@ $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 
-// Check if user has permission to manage elections
-if ($user['role'] != 'voter') {
-    header('Location: dashboard.php');
-    exit();
-}
-
 // Get election details
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header('Location: elections.php');
@@ -40,49 +34,6 @@ if (!$election) {
     header('Location: elections.php');
     exit();
 }
-
-// Process form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = trim($_POST['title']);
-    $description = trim($_POST['description']);
-    $start_date = $_POST['start_date'];
-    $end_date = $_POST['end_date'];
-    $status = $_POST['status'];
-
-    $errors = [];
-
-    if (empty($title)) {
-        $errors[] = "Title is required.";
-    }
-
-    if (empty($description)) {
-        $errors[] = "Description is required.";
-    }
-
-    if (empty($start_date)) {
-        $errors[] = "Start date is required.";
-    }
-
-    if (empty($end_date)) {
-        $errors[] = "End date is required.";
-    }
-
-    if (strtotime($end_date) <= strtotime($start_date)) {
-        $errors[] = "End date must be after start date.";
-    }
-
-    if (empty($errors)) {
-        $update_stmt = $conn->prepare("UPDATE elections SET title = ?, description = ?, start_date = ?, end_date = ?, status = ? WHERE id = ?");
-        $update_stmt->bind_param("sssssi", $title, $description, $start_date, $end_date, $status, $election_id);
-
-        if ($update_stmt->execute()) {
-            header('Location: elections.php?msg=updated');
-            exit();
-        } else {
-            $errors[] = "Database error: " . $conn->error;
-        }
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -90,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Election - VoteSecure</title>
+    <title>View Election - VoteSecure</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
@@ -228,23 +179,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #333;
         }
 
-        .form-group {
-            margin-bottom: 20px;
+        .election-details {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
-        .form-label {
+        .election-details h2 {
+            font-size: 22px;
             font-weight: bold;
-            margin-bottom: 5px;
-            display: block;
             color: #333;
+            margin-bottom: 15px;
         }
 
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
+        .election-details p {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 10px;
         }
 
         .form-actions {
@@ -279,18 +231,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .btn-secondary:hover {
             background-color: #444;
-        }
-
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
-
-        .alert-danger {
-            background-color: #ffe6e6;
-            color: #ff5252;
-            border: 1px solid #ff5252;
         }
     </style>
 </head>
@@ -339,54 +279,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Main Content -->
     <div class="main-content">
         <div class="header">
-            <div class="page-title">Edit Election</div>
+            <div class="page-title">View Election</div>
         </div>
 
-        <?php if (!empty($errors)) { ?>
-            <div class="alert alert-danger">
-                <?php foreach ($errors as $error) { echo "<p>$error</p>"; } ?>
-            </div>
-        <?php } ?>
+        <div class="election-details">
+            <h2><?php echo htmlspecialchars($election['title']); ?></h2>
+            <p><strong>Description:</strong> <?php echo htmlspecialchars($election['description']); ?></p>
+            <p><strong>Start Date:</strong> <?php echo date('M d, Y H:i', strtotime($election['start_date'])); ?></p>
+            <p><strong>End Date:</strong> <?php echo date('M d, Y H:i', strtotime($election['end_date'])); ?></p>
+            <p><strong>Status:</strong> <?php echo ucfirst($election['status']); ?></p>
+        </div>
 
-        <form action="edit_election.php?id=<?php echo $election_id; ?>" method="post">
-            <div class="form-group">
-                <label for="title" class="form-label">Election Title</label>
-                <input type="text" id="title" name="title" class="form-control" value="<?php echo htmlspecialchars($election['title']); ?>" required>
-            </div>
-
-            <div class="form-group">
-                <label for="description" class="form-label">Description</label>
-                <textarea id="description" name="description" class="form-control" required><?php echo htmlspecialchars($election['description']); ?></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="start_date" class="form-label">Start Date</label>
-                <input type="datetime-local" id="start_date" name="start_date" class="form-control" value="<?php echo date('Y-m-d\TH:i', strtotime($election['start_date'])); ?>" required>
-            </div>
-
-            <div class="form-group">
-                <label for="end_date" class="form-label">End Date</label>
-                <input type="datetime-local" id="end_date" name="end_date" class="form-control" value="<?php echo date('Y-m-d\TH:i', strtotime($election['end_date'])); ?>" required>
-            </div>
-
-            <div class="form-group">
-                <label for="status" class="form-label">Status</label>
-                <select id="status" name="status" class="form-control">
-                    <option value="active" <?php echo ($election['status'] == 'active') ? 'selected' : ''; ?>>Active</option>
-                    <option value="inactive" <?php echo ($election['status'] == 'inactive') ? 'selected' : ''; ?>>Inactive</option>
-                    <option value="upcoming" <?php echo ($election['status'] == 'upcoming') ? 'selected' : ''; ?>>Upcoming</option>
-                </select>
-            </div>
-
-            <div class="form-actions">
-                <a href="elections.php" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> Cancel
-                </a>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Save Changes
-                </button>
-            </div>
-        </form>
+        <div class="form-actions">
+            <a href="elections.php" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Elections
+            </a>
+        </div>
     </div>
 </body>
 </html>
