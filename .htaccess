@@ -1,0 +1,8 @@
+RewriteEngine On
+
+# Allow access to login.php and static assets
+RewriteCond %{REQUEST_URI} !^/login\.php$
+RewriteCond %{REQUEST_URI} !\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ [NC]
+
+# Redirect everything else to login.php
+RewriteRule ^.*$ /login.php [L]

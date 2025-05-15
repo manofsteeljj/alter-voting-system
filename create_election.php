@@ -378,11 +378,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <i class="fas fa-users"></i>
                 <span class="nav-text">User Management</span>
             </a>
-            
-            <a href="settings.php" class="nav-item">
-                <i class="fas fa-cog"></i>
-                <span class="nav-text">Settings</span>
-            </a>
         </div>
         
         <div class="user-profile">

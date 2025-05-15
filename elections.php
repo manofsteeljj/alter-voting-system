@@ -42,10 +42,19 @@ if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     }
 }
 
-// Get all elections
-$elections_query = $conn->query("SELECT * FROM elections ORDER BY start_date DESC");
+// Get all elections with candidate and vote counts
 $elections = [];
+$elections_query = $conn->query("SELECT * FROM elections ORDER BY start_date DESC");
 while ($row = $elections_query->fetch_assoc()) {
+    // Count candidates for this election
+    $cid = $row['id'];
+    $cand_q = $conn->query("SELECT COUNT(*) as count FROM candidates WHERE election_id = $cid");
+    $row['candidate_count'] = $cand_q ? $cand_q->fetch_assoc()['count'] : 0;
+
+    // Count votes for this election
+    $vote_q = $conn->query("SELECT COUNT(*) as count FROM votes WHERE election_id = $cid");
+    $row['vote_count'] = $vote_q ? $vote_q->fetch_assoc()['count'] : 0;
+
     $elections[] = $row;
 }
 ?>
@@ -427,11 +436,6 @@ while ($row = $elections_query->fetch_assoc()) {
             <a href="users.php" class="nav-item">
                 <i class="fas fa-users"></i>
                 <span class="nav-text">User Management</span>
-            </a>
-            
-            <a href="settings.php" class="nav-item">
-                <i class="fas fa-cog"></i>
-                <span class="nav-text">Settings</span>
             </a>
         </div>
         

@@ -50,8 +50,9 @@ while ($row = $activities_query->fetch_assoc()) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - VoteSecure</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css">
     <style>
-        * {
+         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -576,8 +577,7 @@ while ($row = $activities_query->fetch_assoc()) {
                 <i class="fas fa-th-large"></i>
                 <span class="nav-text">Dashboard</span>
             </div>
-            
-            <a href="/online-voting-system/elections.php" class="nav-item">
+            <a href="elections.php" class="nav-item">
                 <i class="fas fa-poll"></i>
                 <span class="nav-text">Elections</span>
             </a>
@@ -585,18 +585,15 @@ while ($row = $activities_query->fetch_assoc()) {
                 <i class="fas fa-plus-circle"></i>
                 <span class="nav-text">Create Election</span>
             </a>
-            <div class="nav-item expandable">
-                <div>
-                    <i class="fas fa-users"></i>
-                    <span class="nav-text">User Management</span>
-                </div>
-                <i class="fas fa-chevron-right arrow"></i>
-            </div>
-            
-            <div class="nav-item">
-                <i class="fas fa-cog"></i>
-                <span class="nav-text">Settings</span>
-            </div>
+            <a href="users.php" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span class="nav-text">User Management</span>
+            </a>
+            <!-- Add this logout button -->
+            <a href="logout.php" class="nav-item" style="margin-top:30px;color:#ff5252;">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="nav-text">Logout</span>
+            </a>
         </div>
         
         <div class="user-profile">
@@ -651,10 +648,10 @@ while ($row = $activities_query->fetch_assoc()) {
                         <i class="fas fa-poll"></i>
                     </div>
                 </div>
-                <div class="stat-value">3</div>
+                <div class="stat-value"><?php echo $active_elections; ?></div>
                 <div class="stat-description">Elections in progress</div>
                 <div class="stat-footer">
-                    <a href="#" class="view-link">View details <i class="fas fa-arrow-right"></i></a>
+                    <a href="elections.php" class="view-link">View details <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
             
@@ -665,11 +662,13 @@ while ($row = $activities_query->fetch_assoc()) {
                         <i class="fas fa-users"></i>
                     </div>
                 </div>
-                <div class="stat-value">1,247</div>
+                <div class="stat-value"><?php echo number_format($active_voters); ?></div>
                 <div class="stat-description">Registered voters</div>
                 <div class="stat-footer">
+                    <!-- You can add a growth indicator if you calculate it in PHP -->
                     <div class="growth-indicator">
-                        <i class="fas fa-arrow-up"></i> 12% from last month
+                        <i class="fas fa-arrow-up"></i> 
+                        <!-- Example: 12% from last month, or leave blank if not calculated -->
                     </div>
                 </div>
             </div>
@@ -681,7 +680,7 @@ while ($row = $activities_query->fetch_assoc()) {
                         <i class="fas fa-check-circle"></i>
                     </div>
                 </div>
-                <div class="stat-value">8,543</div>
+                <div class="stat-value"><?php echo number_format($total_votes); ?></div>
                 <div class="stat-description">All time votes</div>
                 <div class="stat-footer">
                     <a href="#" class="view-link">View analytics <i class="fas fa-arrow-right"></i></a>
@@ -693,107 +692,90 @@ while ($row = $activities_query->fetch_assoc()) {
         <div class="content-row">
             <div class="content-card large">
                 <div class="card-title">Current Elections</div>
-                
-                <div class="election-item">
-                    <div class="election-header">
-                        <div class="election-title">Student Council President 2023</div>
-                        <div class="election-status">Active</div>
-                    </div>
-                    <div class="election-date">May 15 - May 20, 2023</div>
-                    <div class="participation-label">
-                        <span>Voter Participation</span>
-                        <span>356/500 (71%)</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 71%;"></div>
-                    </div>
-                    <div class="election-actions">
-                        <button class="btn btn-outline"><i class="fas fa-eye"></i> View Details</button>
-                        <button class="btn btn-outline"><i class="fas fa-chart-bar"></i> Live Results</button>
-                    </div>
-                </div>
-                
-                <div class="election-item">
-                    <div class="election-header">
-                        <div class="election-title">Faculty Representative Election</div>
-                        <div class="election-status">Active</div>
-                    </div>
-                    <div class="election-date">May 10 - May 25, 2023</div>
-                    <div class="participation-label">
-                        <span>Voter Participation</span>
-                        <span>45/120 (38%)</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 38%;"></div>
-                    </div>
-                    <div class="election-actions">
-                        <button class="btn btn-outline"><i class="fas fa-eye"></i> View Details</button>
-                        <button class="btn btn-outline"><i class="fas fa-chart-bar"></i> Live Results</button>
-                    </div>
-                </div>
-                
-                <div class="election-item">
-                    <div class="election-header">
-                        <div class="election-title">Budget Allocation Proposal</div>
-                        <div class="election-status upcoming">Upcoming</div>
-                    </div>
-                    <div class="election-date">May 17 - May 24, 2023</div>
-                    <div class="participation-label">
-                        <span>Voter Participation</span>
-                        <span>0/200 (0%)</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 0%;"></div>
-                    </div>
-                    <div class="election-actions">
-                        <button class="btn btn-outline"><i class="fas fa-eye"></i> View Details</button>
-                    </div>
-                </div>
+                <?php if (count($elections) > 0): ?>
+                    <?php foreach ($elections as $election): ?>
+                        <div class="election-item">
+                            <div class="election-header">
+                                <div class="election-title"><?php echo htmlspecialchars($election['title']); ?></div>
+                                <div class="election-status <?php echo $election['status'] == 'upcoming' ? 'upcoming' : ''; ?>">
+                                    <?php echo ucfirst($election['status']); ?>
+                                </div>
+                            </div>
+                            <div class="election-date">
+                                <?php echo date('M d', strtotime($election['start_date'])); ?> - <?php echo date('M d, Y', strtotime($election['end_date'])); ?>
+                            </div>
+                            <!-- Participation and progress bar can be calculated if you have vote/candidate data -->
+                            <div class="participation-label">
+                                <span>Voter Participation</span>
+                                <span>
+                                    <?php
+                                    // Example: Calculate participation if you have votes and eligible voters
+                                    // Replace with your own logic if you store these numbers
+                                    $election_id = $election['id'];
+                                    $votes_q = $conn->query("SELECT COUNT(*) as count FROM votes WHERE election_id = $election_id");
+                                    $votes_count = $votes_q ? $votes_q->fetch_assoc()['count'] : 0;
+                                    $voters_q = $conn->query("SELECT COUNT(*) as count FROM voters WHERE election_id = $election_id");
+                                    $voters_count = $voters_q ? $voters_q->fetch_assoc()['count'] : 0;
+                                    $percent = ($voters_count > 0) ? round(($votes_count / $voters_count) * 100) : 0;
+                                    echo "$votes_count/$voters_count ($percent%)";
+                                    ?>
+                                </span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: <?php echo $percent; ?>%;"></div>
+                            </div>
+                            <div class="election-actions">
+                                <a href="view_election.php?id=<?php echo $election['id']; ?>" class="btn btn-outline"><i class="fas fa-eye"></i> View Details</a>
+                                <a href="results.php?id=<?php echo $election['id']; ?>" class="btn btn-outline"><i class="fas fa-chart-bar"></i> Live Results</a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div style="padding: 30px; text-align: center;">No elections found.</div>
+                <?php endif; ?>
             </div>
             
             <div class="content-card small">
                 <div class="card-title">Voting Activity</div>
-                
                 <div class="activity-list">
-                    <div class="activity-item">
-                        <div class="activity-icon icon-vote">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="activity-details">
-                            <div class="activity-title">New vote recorded</div>
-                            <div class="activity-time">10 minutes ago</div>
-                        </div>
-                    </div>
-                    
-                    <div class="activity-item">
-                        <div class="activity-icon icon-user">
-                            <i class="fas fa-user-plus"></i>
-                        </div>
-                        <div class="activity-details">
-                            <div class="activity-title">New voter registered</div>
-                            <div class="activity-time">25 minutes ago</div>
-                        </div>
-                    </div>
-                    
-                    <div class="activity-item">
-                        <div class="activity-icon icon-warning">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <div class="activity-details">
-                            <div class="activity-title">Invalid login attempt</div>
-                            <div class="activity-time">42 minutes ago</div>
-                        </div>
-                    </div>
-                    
-                    <div class="activity-item">
-                        <div class="activity-icon icon-update">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <div class="activity-details">
-                            <div class="activity-title">Election results updated</div>
-                            <div class="activity-time">1 hour ago</div>
-                        </div>
-                    </div>
+                    <?php if (count($activities) > 0): ?>
+                        <?php foreach ($activities as $activity): ?>
+                            <div class="activity-item">
+                                <div class="activity-icon 
+                                    <?php
+                                        if ($activity['activity_type'] == 'vote') echo 'icon-vote';
+                                        elseif ($activity['activity_type'] == 'register') echo 'icon-user';
+                                        elseif ($activity['activity_type'] == 'warning') echo 'icon-warning';
+                                        else echo 'icon-update';
+                                    ?>">
+                                    <?php
+                                        if ($activity['activity_type'] == 'vote') echo '<i class="fas fa-check-circle"></i>';
+                                        elseif ($activity['activity_type'] == 'register') echo '<i class="fas fa-user-plus"></i>';
+                                        elseif ($activity['activity_type'] == 'warning') echo '<i class="fas fa-exclamation-triangle"></i>';
+                                        else echo '<i class="fas fa-chart-line"></i>';
+                                    ?>
+                                </div>
+                                <div class="activity-details">
+                                    <div class="activity-title">
+                                        <?php echo htmlspecialchars($activity['description']); ?>
+                                    </div>
+                                    <div class="activity-time">
+                                        <?php
+                                        // Show "x minutes ago" or date
+                                        $time = strtotime($activity['timestamp']);
+                                        $diff = time() - $time;
+                                        if ($diff < 60) echo $diff . " seconds ago";
+                                        elseif ($diff < 3600) echo floor($diff/60) . " minutes ago";
+                                        elseif ($diff < 86400) echo floor($diff/3600) . " hours ago";
+                                        else echo date('M d, Y H:i', $time);
+                                        ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div style="padding: 30px; text-align: center;">No recent activity.</div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
