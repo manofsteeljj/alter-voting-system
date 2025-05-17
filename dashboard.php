@@ -589,7 +589,17 @@ while ($row = $activities_query->fetch_assoc()) {
                 <i class="fas fa-users"></i>
                 <span class="nav-text">User Management</span>
             </a>
-            <!-- Add this logout button -->
+            <!-- New: Add Candidate button -->
+            <a href="add_candidate.php" class="nav-item">
+                <i class="fas fa-user-plus"></i>
+                <span class="nav-text">Add Candidate</span>
+            </a>
+            <!-- New: Add Voter button -->
+            <a href="add_voter.php" class="nav-item">
+                <i class="fas fa-user-check"></i>
+                <span class="nav-text">Add Voter</span>
+            </a>
+            <!-- Logout button -->
             <a href="logout.php" class="nav-item" style="margin-top:30px;color:#ff5252;">
                 <i class="fas fa-sign-out-alt"></i>
                 <span class="nav-text">Logout</span>
@@ -764,7 +774,8 @@ while ($row = $activities_query->fetch_assoc()) {
                                         // Show "x minutes ago" or date
                                         $time = strtotime($activity['timestamp']);
                                         $diff = time() - $time;
-                                        if ($diff < 60) echo $diff . " seconds ago";
+                                        if ($diff < 0) $diff = 0; // Prevent negative values
+                                        if ($diff < 60) echo "just now";
                                         elseif ($diff < 3600) echo floor($diff/60) . " minutes ago";
                                         elseif ($diff < 86400) echo floor($diff/3600) . " hours ago";
                                         else echo date('M d, Y H:i', $time);

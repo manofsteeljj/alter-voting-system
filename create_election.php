@@ -24,6 +24,13 @@ if ($user['role'] != 'voter' && $user['role'] != 'election_manager') {
     exit();
 }
 
+// Fetch all users to select as candidates
+$candidate_users = [];
+$user_query = $conn->query("SELECT id, username FROM users ORDER BY username ASC");
+while ($row = $user_query->fetch_assoc()) {
+    $candidate_users[] = $row;
+}
+
 // Process form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validate input
@@ -55,14 +62,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "End date must be after start date";
     }
     
+    // Get selected candidate user IDs (array)
+    $selected_candidates = isset($_POST['candidates']) ? $_POST['candidates'] : [];
+    
     // If no errors, save to database
     if (empty($errors)) {
         $stmt = $conn->prepare("INSERT INTO elections (title, description, start_date, end_date, status, created_by) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("sssssi", $title, $description, $start_date, $end_date, $status, $user_id);
         
         if ($stmt->execute()) {
-            // Record activity
             $election_id = $conn->insert_id;
+            
+            // Insert selected candidates into candidates table
+            if (!empty($selected_candidates)) {
+                $cand_stmt = $conn->prepare("INSERT INTO candidates (name, election_id, user_id) VALUES (?, ?, ?)");
+                foreach ($selected_candidates as $candidate_id) {
+                    // Get username for candidate name
+                    $uname_stmt = $conn->prepare("SELECT username FROM users WHERE id = ?");
+                    $uname_stmt->bind_param("i", $candidate_id);
+                    $uname_stmt->execute();
+                    $uname_result = $uname_stmt->get_result();
+                    $uname_row = $uname_result->fetch_assoc();
+                    $candidate_name = $uname_row ? $uname_row['username'] : 'Candidate';
+                    
+                    $cand_stmt->bind_param("sii", $candidate_name, $election_id, $candidate_id);
+                    $cand_stmt->execute();
+                }
+            }
+
+            // Record activity
             $activity_stmt = $conn->prepare("INSERT INTO activities (activity_type, description, user_id, election_id) VALUES ('create', 'New election created', ?, ?)");
             $activity_stmt->bind_param("ii", $user_id, $election_id);
             $activity_stmt->execute();
@@ -84,6 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Election - VoteSecure</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         * {
             margin: 0;
@@ -450,6 +479,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </select>
                 </div>
                 
+                <div class="form-group">
+                    <label for="candidates" class="form-label">Select Candidates</label>
+                    <select id="candidates" name="candidates[]" class="form-control" multiple required>
+                        <?php foreach ($candidate_users as $cu): ?>
+                            <option value="<?php echo $cu['id']; ?>"
+                                <?php echo (isset($selected_candidates) && in_array($cu['id'], $selected_candidates)) ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($cu['username']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <small>Select one or more users as candidates for this election.</small>
+                </div>
+                
                 <div class="form-actions">
                     <a href="elections.php" class="btn btn-secondary">
                         <i class="fas fa-times"></i> Cancel
@@ -462,6 +504,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
     
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         // Toggle dark mode
         document.querySelector('.dark-mode-toggle').addEventListener('click', function() {
@@ -478,6 +522,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 e.preventDefault();
                 alert('End date must be after start date');
             }
+        });
+        
+        // Initialize select2 for candidate selection
+        $(document).ready(function() {
+            $('#candidates').select2({
+                placeholder: "Choose candidates...",
+                width: '100%',
+                allowClear: true
+            });
         });
     </script>
 </body>
