@@ -114,12 +114,13 @@ while ($row = $activities_query->fetch_assoc()) {
             border-radius: 8px;
             cursor: pointer;
             color: #555;
-            transition: all 0.3s ease;
+            transition: background 0.3s, color 0.3s, transform 0.2s;
         }
         
         .nav-item:hover {
             background-color: #f0f5ff;
             color: #0066ff;
+            transform: translateX(5px) scale(1.03);
         }
         
         .nav-item.active {
@@ -293,6 +294,7 @@ while ($row = $activities_query->fetch_assoc()) {
             justify-content: center;
             align-items: center;
             color: white;
+            transition: transform 0.3s cubic-bezier(.4,0,.2,1);
         }
         
         .icon-elections {
@@ -433,6 +435,7 @@ while ($row = $activities_query->fetch_assoc()) {
             height: 100%;
             background-color: #0066ff;
             border-radius: 5px;
+            transition: width 1s cubic-bezier(.4,0,.2,1);
         }
         
         .election-actions {
@@ -523,6 +526,28 @@ while ($row = $activities_query->fetch_assoc()) {
             color: #888;
             font-size: 12px;
         }
+        
+        /* Fade-in animation for cards */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .stats-container .stat-card,
+        .content-card,
+        .election-item,
+        .activity-item {
+            animation: fadeInUp 0.7s ease both;
+        }
+        .stats-container .stat-card { animation-delay: 0.1s; }
+        .content-card { animation-delay: 0.2s; }
+        .election-item { animation-delay: 0.3s; }
+        .activity-item { animation-delay: 0.4s; }
         
         /* Responsive styles */
         @media (max-width: 992px) {
