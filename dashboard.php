@@ -614,21 +614,22 @@ while ($row = $activities_query->fetch_assoc()) {
                 <i class="fas fa-users"></i>
                 <span class="nav-text">User Management</span>
             </a>
-            <!-- New: Add Candidate button -->
+            <!-- 
             <a href="add_candidate.php" class="nav-item">
                 <i class="fas fa-user-plus"></i>
                 <span class="nav-text">Add Candidate</span>
             </a>
-            <!-- New: Add Voter button -->
             <a href="add_voter.php" class="nav-item">
                 <i class="fas fa-user-check"></i>
                 <span class="nav-text">Add Voter</span>
             </a>
-            <!-- Logout button -->
+          New: Add Voter button -->
+         <!-- Logout button-->
             <a href="logout.php" class="nav-item" style="margin-top:30px;color:#ff5252;">
                 <i class="fas fa-sign-out-alt"></i>
                 <span class="nav-text">Logout</span>
             </a>
+        
         </div>
         
         <div class="user-profile">
